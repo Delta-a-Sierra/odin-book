@@ -1,5 +1,14 @@
 import { getSession } from "next-auth/react";
-import { FC, useContext, React, useEffect, useState, createContext, FunctionComponent, ReactChildren } from "react";
+import {
+  FC,
+  useContext,
+  React,
+  useEffect,
+  useState,
+  createContext,
+  FunctionComponent,
+  ReactChildren,
+} from "react";
 
 interface AuthContextInterface {
   authenticated: boolean;
@@ -7,28 +16,32 @@ interface AuthContextInterface {
 }
 
 type AuthProps = {
-  children?: React.ReactNode
-}
+  children?: React.ReactNode;
+};
 
-const authContext = createContext<AuthContextInterface | undefined>(undefined)
+const authContext = createContext<AuthContextInterface | undefined>(undefined);
 
 export function AuthProvider({ children }: AuthProps) {
-  const [state, setState] = useState({ authenticated: false, isLoading: false })
+  const [state, setState] = useState({
+    authenticated: false,
+    isLoading: false,
+  });
 
   useEffect(() => {
     const securePage = async () => {
-      const session = await getSession()
+      const session = await getSession();
+      console.log("auth context");
+      console.log(session);
       if (!session) {
-        setState({ authenticated: false, isLoading: false })
+        setState({ authenticated: false, isLoading: false });
+        return;
       }
-      setState({ authenticated: true, isLoading: false })
-    }
-    setState(prev => ({ ...prev, isLoading: true }))
-    securePage()
-  }, [])
-  return (
-    <authContext.Provider value={state}>{children} </authContext.Provider>
-  )
+      setState({ authenticated: true, isLoading: false });
+    };
+    setState((prev) => ({ ...prev, isLoading: true }));
+    securePage();
+  }, []);
+  return <authContext.Provider value={state}>{children} </authContext.Provider>;
 }
 
 export function useAuth() {
@@ -38,4 +51,3 @@ export function useAuth() {
   }
   return context;
 }
-

@@ -11,10 +11,24 @@ import { env } from "../../../env/server.mjs";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
+  session: {
+    strategy: "jwt",
+    maxAge: 3000,
+  },
+  jwt: {
+    secret: env.NEXTAUTH_SECRET,
+  },
+  secret: env.NEXTAUTH_SECRET,
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id;
       }
       return session;
     },
@@ -34,28 +48,30 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
     FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      clientId: env.FACEBOOK_CLIENT_ID,
+      clientSecret: env.FACEBOOK_CLIENT_SECRET,
     }),
     CredentialsProvider({
       type: "credentials",
       credentials: {
-        // username: { label: "Username", type: "text", placeholder: "jsmith" },
-        // password: { label: "Password", type: "password" },
+        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" }
       },
-      authorize(credentials, req) {
+      authorize(credentials) {
+        if (!credentials) {
+          throw new Error('no credentials provided')
+        }
         if (
           credentials.username !== "bob@email.com" ||
           credentials.password !== "password"
         ) {
           throw new Error("Incorrect Credentials");
         }
-        return { id: 1, name: "bobruss", email: "bob@email.com" };
+        const user = { id: "1", name: "bobruss", email: "bob@email.com" };
+        return user;
       },
     }),
-
     // ...add more providers here
   ],
 };
-
 export default NextAuth(authOptions);

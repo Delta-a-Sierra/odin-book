@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { signIn, useSession } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -21,10 +21,6 @@ const Signin: NextPage = () => {
       password,
       redirect: false,
     });
-    console.log(res);
-    if (res?.status === 200) {
-      router.push("/");
-    }
   };
 
   const handleChange = (e) => {
