@@ -33,7 +33,6 @@ export function AuthProvider({ children }: AuthProps) {
 
 export function useAuth() {
   const context = useContext(authContext);
-
   if (context === undefined) {
     throw new Error("useCount must be used within a CountProvider");
   }
