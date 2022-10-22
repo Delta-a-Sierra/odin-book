@@ -3,27 +3,43 @@ import { getSession, signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { trpc } from "../utils/trpc";
 
 const Signin: NextPage = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const [form, setForm] = useState({ username: "", password: "" });
+  const signUp = trpc.auth.signUp.useMutation()
+
 
   if (session) {
     router.push("/");
   }
 
-  const handleSignin = async (e) => {
+  const handleSignin = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const { username, password } = form;
     const res = await signIn("credentials", {
       username,
       password,
-      redirect: false,
+      redirect: false
     });
   };
 
-  const handleChange = (e) => {
+  const handleSignUp = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const { username, password } = form;
+    signUp.mutate({ username, password })
+    console.log(signUp)
+    if (!signUp.data?.ok) {
+      console.log(signUp.data?.message)
+      return
+    }
+    handleSignin(e)
+  };
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -72,7 +88,7 @@ const Signin: NextPage = () => {
               facebook
             </button>
           </div>
-          <form onSubmit={handleSignin} className="flex flex-col gap-4">
+          <form onSubmit={handleSignUp} className="flex flex-col gap-4">
             <input
               type="email"
               placeholder="email"
@@ -88,7 +104,7 @@ const Signin: NextPage = () => {
               onChange={handleChange}
             />
             <button
-              onClick={handleSignin}
+              onClick={handleSignUp}
               className="rounded-md bg-primary p-4 text-white"
             >
               Sign In

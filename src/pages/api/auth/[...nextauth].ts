@@ -3,11 +3,12 @@ import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
-
+import * as argon2 from 'argon2'
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../server/db/client";
 import { env } from "../../../env/server.mjs";
+import { boolean } from "zod";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
@@ -55,20 +56,22 @@ export const authOptions: NextAuthOptions = {
       type: "credentials",
       credentials: {
         username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
-      authorize(credentials) {
+      authorize: async (credentials) => {
         if (!credentials) {
           throw new Error('no credentials provided')
         }
-        if (
-          credentials.username !== "bob@email.com" ||
-          credentials.password !== "password"
-        ) {
-          throw new Error("Incorrect Credentials");
+        const { username, password } = credentials
+        const user = await prisma.user.findUnique({ where: { email: username } })
+        if (!user) {
+          return null
         }
-        const user = { id: "1", name: "bobruss", email: "bob@email.com" };
-        return user;
+        const verify = await argon2.verify((user.password as string), password)
+        if (!verify) {
+          return null
+        }
+        return { id: user.id, name: user.name, email: user.email }
       },
     }),
     // ...add more providers here
