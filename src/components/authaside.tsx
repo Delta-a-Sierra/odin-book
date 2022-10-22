@@ -1,4 +1,4 @@
-import { Button, button } from "./button"
+import { Button } from "./button"
 type authasideProps = {
   buttonText: string
   title: string
