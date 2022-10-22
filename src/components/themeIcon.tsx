@@ -7,7 +7,7 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { useColor } from "../hooks/useColor";
 
 export const ThemeIcon: React.FC<themeIconProps> = ({ color, size }) => {
-  const colors = useColor()
+  const colors = useColor();
 
   const {
     state: { dark },
@@ -27,7 +27,7 @@ export const ThemeIcon: React.FC<themeIconProps> = ({ color, size }) => {
     <div onClick={() => dispatch({ type: "toggle" })}>
       <FaMoon
         size={size ? size : "2em"}
-        color={color ? color : colors.primary}
+        color={color ? color : colors.accent}
       />
     </div>
   );

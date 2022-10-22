@@ -2,13 +2,14 @@ import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import { AuthAside } from "./authaside";
 import { Logo } from "./";
 import { ThemeIcon } from "./themeIcon";
 import { useColor } from "../hooks/useColor";
-import useMediaQuery from "../hooks/useMediaQuery";
+import { useTheme } from "../contexts/theme";
+import { AuthForm } from "./authForm";
+import { useEffect, useState } from "react";
 
 export enum PageTypes {
   SignUp = "Sign Up",
@@ -22,10 +23,12 @@ type AuthPageProps = {
 const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [form, setForm] = useState({ username: "", password: "" });
   const signUp = trpc.auth.signUp.useMutation();
+  const [credentials, setCredentials] = useState({ username: '', password: '' })
   const colors = useColor();
-  const isLarge = useMediaQuery("(min-width: 768px)");
+  const {
+    state: { dark },
+  } = useTheme();
   const authAsideBodies = {
     "Sign In":
       "Enter your personal details to get started on your journey with us.",
@@ -33,39 +36,31 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
       "Welcome Back Enter your personal details to continue your journey with us.",
   };
 
+
   if (session) {
     router.push("/");
   }
 
-  const handleSignin = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (signUp.data?.ok) {
+      handleSignin(credentials)
+    }
+  }, [signUp, credentials])
+
+  const handleSignin = async (form: { username: string, password: string }) => {
     const { username, password } = form;
-    const res = await signIn("credentials", {
+    await signIn("credentials", {
       username,
       password,
       redirect: false,
     });
-
-    if (!res?.ok) {
-      console.log(res?.error);
-    }
   };
 
-  const handleSignUp = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  const handleSignUp = async (form: { username: string, password: string }) => {
     const { username, password } = form;
-    signUp.mutate({ username, password });
-    console.log(signUp);
-    if (!signUp.data?.ok) {
-      console.log(signUp.data?.message);
-      return;
-    }
-    handleSignin(e);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+    setCredentials({ username, password })
+    signUp.mutate({ username, password })
+  }
 
   return (
     <>
@@ -77,7 +72,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-screen w-screen ">
+      <main className={`flex h-screen w-screen ${dark && "dark"} `}>
         <AuthAside
           title={
             pageType === PageTypes.SignIn ? "Hello Friend!" : "Welcome Back!"
@@ -87,21 +82,24 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
             pageType === PageTypes.SignIn ? PageTypes.SignUp : PageTypes.SignIn
           }
         />
-        <div className="flex w-full flex-col gap-4 p-8">
+        <div className="flex flex-1 flex-col justify-between gap-1 py-4 px-10 dark:bg-dark-800 sm:px-8 md:py-4 ">
           <header className="relative mb-2 flex w-full items-center justify-center md:justify-start">
             <Logo width="70" />
             <div className="absolute flex w-full justify-end">
               <ThemeIcon color={colors.gray["600"]} size="2em" />
             </div>
           </header>
-          <div>
-            <h1>{pageType}</h1>
+          <div className="justifiy-center flex  flex-col items-center">
+            <h1 className="font-open text-center text-2xl font-extrabold text-primary dark:text-gray-200 md:text-3xl lg:text-5xl">
+              {pageType}
+            </h1>
+            <AuthForm type={pageType} handleAuth={pageType === PageTypes.SignIn ? handleSignin : handleSignUp} />
           </div>
-          <form onSubmit={handleSignUp} className="flex flex-col gap-4"></form>
+          <p>end</p>
         </div>
       </main>
     </>
-  );
+  )
 };
 
 export default AuthPage;
