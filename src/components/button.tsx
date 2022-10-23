@@ -11,9 +11,8 @@ type buttonProps = {
 export const Button: React.FC<buttonProps> = ({ text, textColor, bgColor }) => {
   return (
     <button
-      className={`${textColor && `text-${textColor}`}  ${
-        bgColor ? `bg-${bgColor}` : "bg-primary"
-      } rounded-full py-1 px-4`}
+      className={`${textColor && `text-${textColor}`}  ${bgColor ? `bg-${bgColor}` : "bg-primary"
+        } rounded-full py-2 px-8`}
     >
       {text}
     </button>

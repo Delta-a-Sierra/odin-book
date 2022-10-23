@@ -40,7 +40,7 @@ export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
       username: Yup.string().email().required(),
       password: Yup.string().password().required(),
       confirm: Yup.string().required()
-        .oneOf([Yup.ref("password"), null], "Passwords must match"),
+        .oneOf([Yup.ref("password")], "Passwords must match"),
     })
   }
 
@@ -51,7 +51,7 @@ export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
     validation = validationMap[PageTypes.SignIn]
   } else {
     intial = intialsMap[PageTypes.SignUp]
-    validation = validationMap[PageTypes.SignIn]
+    validation = validationMap[PageTypes.SignUp]
   }
 
 
@@ -91,13 +91,13 @@ export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
       />
       {type === "Sign Up" && (
         <Input
-          name="password"
+          name="confirm"
           onChange={formik.handleChange}
-          value={formik.values.password}
-          errorMsg={formik.errors.password}
+          value={formik.values.confirm}
+          errorMsg={formik.errors.confirm}
           placeholder="confirm Password"
           onBlur={formik.handleBlur}
-          touched={formik.touched.password}
+          touched={formik.touched.confirm}
           type="password"
         />
       )}
@@ -106,7 +106,7 @@ export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
           bgColor="primary"
           onClick={formik.handleSubmit}
           textColor="white"
-          text="Sign In"
+          text={type}
         />
       </div>
     </form>

@@ -4,7 +4,7 @@ import { MdPassword } from "react-icons/md";
 
 type inputProps = {
   name: string;
-  value: string;
+  value: string | undefined;
   onChange: ChangeEventHandler<HTMLInputElement>;
   errorMsg?: string;
   onBlur: FocusEventHandler<HTMLInputElement>;
@@ -43,10 +43,10 @@ export const Input: React.FC<inputProps> = ({
         />
       </label>
       <p
-        className={`${touched && errorMsg ? "inline" : "hidden"
+        className={`${touched && errorMsg ? "inline visible" : "invisible"
           } font-nunito mt-1 ml-5 text-xs tracking-wider text-red-500 lg:text-base xl:text-lg`}
       >
-        {errorMsg}
+        {errorMsg || 'empty'}
       </p>
     </div>
   );

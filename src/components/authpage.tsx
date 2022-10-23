@@ -4,7 +4,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { trpc } from "../utils/trpc";
 import { AuthAside } from "./authaside";
-import { Logo } from "./";
+import { Logo, SocialIcon } from "./";
 import { ThemeIcon } from "./themeIcon";
 import { useColor } from "../hooks/useColor";
 import { useTheme } from "../contexts/theme";
@@ -82,17 +82,24 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
             pageType === PageTypes.SignIn ? PageTypes.SignUp : PageTypes.SignIn
           }
         />
-        <div className="flex flex-1 flex-col justify-between gap-1 py-4 px-10 dark:bg-dark-800 sm:px-8 md:py-4 ">
+        <div className="flex flex-1 flex-col justify-between  py-4 px-10 dark:bg-dark-800 sm:px-8 md:py-4 ">
           <header className="relative mb-2 flex w-full items-center justify-center md:justify-start">
             <Logo width="70" />
             <div className="absolute flex w-full justify-end">
-              <ThemeIcon color={colors.gray["600"]} size="2em" />
+              <ThemeIcon color={colors.gray["400"]} size="1.5em" />
             </div>
           </header>
           <div className="justifiy-center flex  flex-col items-center">
-            <h1 className="font-open text-center text-2xl font-extrabold text-primary dark:text-gray-200 md:text-3xl lg:text-5xl">
-              {pageType}
-            </h1>
+            <div className="mb-8">
+              <h1 className="font-open mb-2 text-center text-2xl font-extrabold text-primary dark:text-gray-200  md:text-3xl lg:text-5xl">
+                {pageType}
+              </h1>
+              <div className="flex gap-3">
+                <SocialIcon type='google' onClick={() => { signIn('google') }} />
+                <SocialIcon type='facebook' onClick={() => { signIn('facebook') }} />
+                <SocialIcon type='discord' onClick={() => { signIn('discord') }} />
+              </div>
+            </div>
             <AuthForm type={pageType} handleAuth={pageType === PageTypes.SignIn ? handleSignin : handleSignUp} />
           </div>
           <p>end</p>
