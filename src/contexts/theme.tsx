@@ -6,7 +6,7 @@ interface ThemeContextInterface {
 }
 
 type ThemeProviderProps = {
-  children: string
+  children: React.ReactNode;
 }
 
 type ThemeState = {

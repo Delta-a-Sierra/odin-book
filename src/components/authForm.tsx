@@ -6,7 +6,7 @@ import YupPassword from "yup-password";
 YupPassword(Yup);
 
 type authFormProps = {
-  handleAuth: (form: { username: string; password: string; }) => Promise<void>;
+  handleAuth: (form: { username: string; password: string; }) => void;
   type: 'Sign In' | 'Sign Up';
 };
 

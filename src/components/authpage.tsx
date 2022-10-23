@@ -59,10 +59,14 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
     });
   };
 
-  const handleSignUp = async (form: credentials) => {
+  const handleSignUp = (form: credentials) => {
     const { username, password } = form;
     setCredentials({ username, password })
     signUp.mutate({ username, password })
+  }
+
+  const handleOauth = async (provider: 'facebook' | 'discord' | 'google') => {
+    await signIn(provider)
   }
 
   return (
@@ -98,9 +102,9 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
                 {pageType}
               </h1>
               <div className="flex gap-3">
-                <SocialIcon type='google' onClick={() => { signIn('google') }} />
-                <SocialIcon type='facebook' onClick={() => { signIn('facebook') }} />
-                <SocialIcon type='discord' onClick={() => { signIn('discord') }} />
+                <SocialIcon type='google' onClick={() => { handleOauth('google') }} />
+                <SocialIcon type='facebook' onClick={() => { handleOauth('facebook') }} />
+                <SocialIcon type='discord' onClick={() => { handleOauth('discord') }} />
               </div>
             </div>
             <AuthForm type={pageType} handleAuth={pageType === "Sign In" ? handleSignin : handleSignUp} />
