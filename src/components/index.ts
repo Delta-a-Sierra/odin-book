@@ -4,3 +4,4 @@ export { default as AuthPage } from "./authpage";
 export { Input } from "./input";
 export { AuthForm } from "./authForm";
 export { SocialIcon } from './socialIcon'
+export { FloatLink } from './floatLink'

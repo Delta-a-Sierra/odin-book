@@ -43,7 +43,7 @@ export const Input: React.FC<inputProps> = ({
         />
       </label>
       <p
-        className={`${touched && errorMsg ? "inline visible" : "invisible"
+        className={`${touched && errorMsg ? "inline" : "hidden"
           } font-nunito mt-1 ml-5 text-xs tracking-wider text-red-500 lg:text-base xl:text-lg`}
       >
         {errorMsg || 'empty'}
