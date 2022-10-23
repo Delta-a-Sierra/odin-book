@@ -3,12 +3,11 @@ import { Input } from "./input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
-import { PageTypes } from "./authpage";
 YupPassword(Yup);
 
 type authFormProps = {
   handleAuth: (form: { username: string; password: string; }) => Promise<void>;
-  type: string;
+  type: 'Sign In' | 'Sign Up';
 };
 
 export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
@@ -46,12 +45,12 @@ export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
 
   let intial: intialsType
   let validation: any
-  if (type === PageTypes.SignIn) {
-    intial = intialsMap[PageTypes.SignIn]
-    validation = validationMap[PageTypes.SignIn]
+  if (type === "Sign In") {
+    intial = intialsMap["Sign In"]
+    validation = validationMap["Sign In"]
   } else {
-    intial = intialsMap[PageTypes.SignUp]
-    validation = validationMap[PageTypes.SignUp]
+    intial = intialsMap["Sign Up"]
+    validation = validationMap["Sign Up"]
   }
 
 

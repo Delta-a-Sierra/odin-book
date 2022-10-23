@@ -1,7 +1,11 @@
 import type { NextPage } from "next";
 import { AuthPage } from "../../components";
-import { PageTypes } from "../../components/authpage";
 import { useRouter } from "next/router";
+
+export enum PageTypes {
+  SignUp = "Sign Up",
+  SignIn = "Sign In",
+}
 
 const SignInSignUp: NextPage = () => {
   const router = useRouter()

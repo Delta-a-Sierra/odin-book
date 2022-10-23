@@ -11,24 +11,26 @@ import { useTheme } from "../contexts/theme";
 import { AuthForm } from "./authForm";
 import { useEffect, useState } from "react";
 
-export enum PageTypes {
-  SignUp = "Sign Up",
-  SignIn = "Sign In",
-}
-
 type AuthPageProps = {
-  pageType: PageTypes;
+  pageType: 'Sign Up' | 'Sign In';
 };
+
+interface credentials {
+  username: string,
+  password: string
+}
 
 const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   const { data: session } = useSession();
   const router = useRouter();
   const signUp = trpc.auth.signUp.useMutation();
-  const [credentials, setCredentials] = useState({ username: '', password: '' })
-  const colors = useColor();
+  const [credentials, setCredentials] = useState<credentials>({ username: '', password: '' })
+  const colors = useColor(); // tailwind colors
+
   const {
     state: { dark },
   } = useTheme();
+
   const authAsideBodies = {
     "Sign In":
       "Enter your personal details to get started on your journey with us.",
@@ -36,18 +38,19 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
       "Welcome Back Enter your personal details to continue your journey with us.",
   };
 
-
+  // Redirects if authenticated
   if (session) {
     router.push("/");
   }
 
+  // Automatically Signs in after SignUp
   useEffect(() => {
     if (signUp.data?.ok) {
       handleSignin(credentials)
     }
   }, [signUp, credentials])
 
-  const handleSignin = async (form: { username: string, password: string }) => {
+  const handleSignin = async (form: credentials) => {
     const { username, password } = form;
     await signIn("credentials", {
       username,
@@ -56,7 +59,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
     });
   };
 
-  const handleSignUp = async (form: { username: string, password: string }) => {
+  const handleSignUp = async (form: credentials) => {
     const { username, password } = form;
     setCredentials({ username, password })
     signUp.mutate({ username, password })
@@ -75,11 +78,11 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
       <main className={`flex h-screen w-screen ${dark && "dark"} `}>
         <AuthAside
           title={
-            pageType === PageTypes.SignIn ? "Hello Friend!" : "Welcome Back!"
+            pageType === "Sign In" ? "Hello Friend!" : "Welcome Back!"
           }
           body={authAsideBodies[pageType]}
           buttonText={
-            pageType === PageTypes.SignIn ? PageTypes.SignUp : PageTypes.SignIn
+            pageType === "Sign In" ? "Sign Up" : "Sign In"
           }
         />
         <div className="flex flex-1 flex-col justify-between  py-4 px-10 dark:bg-dark-800 sm:px-8 md:py-4 ">
@@ -100,7 +103,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
                 <SocialIcon type='discord' onClick={() => { signIn('discord') }} />
               </div>
             </div>
-            <AuthForm type={pageType} handleAuth={pageType === PageTypes.SignIn ? handleSignin : handleSignUp} />
+            <AuthForm type={pageType} handleAuth={pageType === "Sign In" ? handleSignin : handleSignUp} />
           </div>
           <p>end</p>
         </div>
