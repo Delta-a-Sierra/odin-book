@@ -1,4 +1,5 @@
-import { createContext, Dispatch, useContext, useReducer } from "react";
+import { createContext, Dispatch, useContext, useEffect, useReducer, useState } from "react";
+import { usePreferences } from "../hooks/usePreferences";
 
 interface ThemeContextInterface {
   state: ThemeState;
@@ -11,6 +12,7 @@ type ThemeProviderProps = {
 
 type ThemeState = {
   dark: boolean
+  isLoading: boolean
 }
 
 type ThemeAction = {
@@ -19,10 +21,14 @@ type ThemeAction = {
 
 const ThemeContext = createContext<ThemeContextInterface | undefined>(undefined);
 
+//TODO ADD IS LOADING
 function ThemeReducer(state: ThemeState, action: ThemeAction) {
   switch (action.type) {
     case "toggle": {
-      return { dark: !state.dark };
+      return { ...state, dark: !state.dark };
+    }
+    case "toggleLoad": {
+      return { ...state, isLoading: !state.isLoading }
     }
     default: {
       return state
@@ -31,9 +37,23 @@ function ThemeReducer(state: ThemeState, action: ThemeAction) {
 }
 
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(ThemeReducer, { dark: false });
+  const { preferences, updatePreferences } = usePreferences()
+  const [state, dispatch] = useReducer(ThemeReducer, { dark: preferences.theme.dark, isLoading: true });
+
+  useEffect(() => {
+    if (preferences.theme.dark != state.dark) {
+      updatePreferences({ ...preferences, theme: { dark: state.dark } })
+    }
+  }, [state])
+
+  useEffect(() => {
+    if (preferences.theme.dark != state.dark) {
+      dispatch({ type: 'toggle' })
+    }
+  }, [preferences])
 
   const value = { state, dispatch };
+
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );

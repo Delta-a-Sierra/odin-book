@@ -12,19 +12,22 @@ import { AuthForm } from "./authForm";
 import { useEffect, useState } from "react";
 
 type AuthPageProps = {
-  pageType: 'Sign Up' | 'Sign In';
+  pageType: "Sign Up" | "Sign In";
 };
 
 interface credentials {
-  username: string,
-  password: string
+  username: string;
+  password: string;
 }
 
 const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   const { data: session } = useSession();
   const router = useRouter();
   const signUp = trpc.auth.signUp.useMutation();
-  const [credentials, setCredentials] = useState<credentials>({ username: '', password: '' })
+  const [credentials, setCredentials] = useState<credentials>({
+    username: "",
+    password: "",
+  });
   const colors = useColor(); // tailwind colors
 
   const {
@@ -38,6 +41,11 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
       "Welcome Back Enter your personal details to continue your journey with us.",
   };
 
+  const linkText = {
+    "Sign In": "Don't have a account?",
+    "Sign Up": "Already have an account?"
+  };
+
   // Redirects if authenticated
   if (session) {
     router.push("/");
@@ -46,9 +54,9 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   // Automatically Signs in after SignUp
   useEffect(() => {
     if (signUp.data?.ok) {
-      handleSignin(credentials)
+      handleSignin(credentials);
     }
-  }, [signUp, credentials])
+  }, [signUp, credentials]);
 
   const handleSignin = async (form: credentials) => {
     const { username, password } = form;
@@ -61,21 +69,21 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
 
   const handleSignUp = (form: credentials) => {
     const { username, password } = form;
-    setCredentials({ username, password })
-    signUp.mutate({ username, password })
-  }
+    setCredentials({ username, password });
+    signUp.mutate({ username, password });
+  };
 
-  const handleOauth = async (provider: 'facebook' | 'discord' | 'google') => {
-    await signIn(provider)
-  }
+  const handleOauth = async (provider: "facebook" | "discord" | "google") => {
+    await signIn(provider);
+  };
 
   const handleRedirect = () => {
-    if (pageType === 'Sign In') {
-      router.push('/auth/signup')
-      return
+    if (pageType === "Sign In") {
+      router.push("/auth/signup");
+      return;
     }
-    router.push('/auth/signin')
-  }
+    router.push("/auth/signin");
+  };
 
   return (
     <>
@@ -89,13 +97,9 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
       </Head>
       <main className={`flex h-screen w-screen ${dark && "dark"} `}>
         <AuthAside
-          title={
-            pageType === "Sign In" ? "Hello Friend!" : "Welcome Back!"
-          }
+          title={pageType === "Sign In" ? "Hello Friend!" : "Welcome Back!"}
           body={authAsideBodies[pageType]}
-          buttonText={
-            pageType === "Sign In" ? "Sign Up" : "Sign In"
-          }
+          buttonText={pageType === "Sign In" ? "Sign Up" : "Sign In"}
           buttonOnClick={handleRedirect}
         />
         <div className="flex flex-1 flex-col justify-between  py-4 px-10 dark:bg-dark-800 sm:px-8 md:py-4 ">
@@ -111,21 +115,39 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
                 {pageType}
               </h1>
               <div className="flex gap-3">
-                <SocialIcon type='google' onClick={() => { handleOauth('google') }} />
-                <SocialIcon type='facebook' onClick={() => { handleOauth('facebook') }} />
-                <SocialIcon type='discord' onClick={() => { handleOauth('discord') }} />
+                <SocialIcon
+                  type="google"
+                  onClick={() => {
+                    handleOauth("google");
+                  }}
+                />
+                <SocialIcon
+                  type="facebook"
+                  onClick={() => {
+                    handleOauth("facebook");
+                  }}
+                />
+                <SocialIcon
+                  type="discord"
+                  onClick={() => {
+                    handleOauth("discord");
+                  }}
+                />
               </div>
             </div>
-            <AuthForm type={pageType} handleAuth={pageType === "Sign In" ? handleSignin : handleSignUp} />
+            <AuthForm
+              type={pageType}
+              handleAuth={pageType === "Sign In" ? handleSignin : handleSignUp}
+            />
             <div className="mt-6 md:hidden">
-              <FloatLink size="sm" center />
+              <FloatLink href={pageType === 'Sign In' ? "/auth/signup" : "/auth/signin"} text={linkText[pageType]} size="sm" center />
             </div>
           </div>
           <div></div>
         </div>
       </main>
     </>
-  )
+  );
 };
 
 export default AuthPage;
