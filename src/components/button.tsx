@@ -1,18 +1,17 @@
-import { FormEvent } from "react";
 
 type buttonProps = {
   text: string;
   textColor?: string;
   bgColor?: string;
-  onClick: (e?: FormEvent<HTMLFormElement> | undefined) => void;
+  onClick: () => void
   type?: string;
 };
 
-export const Button: React.FC<buttonProps> = ({ text, textColor, bgColor }) => {
+export const Button: React.FC<buttonProps> = ({ text, textColor, bgColor, onClick }) => {
   return (
     <button
-      className={`${textColor && `text-${textColor}`}  ${bgColor ? `bg-${bgColor}` : "bg-primary"
-        } rounded-full py-2 px-8`}
+      onClick={onClick}
+      className={`${textColor && `text-${textColor}`}  bg-${bgColor ?? 'primary'} rounded-full py-2 px-8`}
     >
       {text}
     </button>

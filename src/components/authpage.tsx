@@ -69,6 +69,14 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
     await signIn(provider)
   }
 
+  const handleRedirect = () => {
+    if (pageType === 'Sign In') {
+      router.push('/auth/signup')
+      return
+    }
+    router.push('/auth/signin')
+  }
+
   return (
     <>
       <Head>
@@ -88,6 +96,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
           buttonText={
             pageType === "Sign In" ? "Sign Up" : "Sign In"
           }
+          buttonOnClick={handleRedirect}
         />
         <div className="flex flex-1 flex-col justify-between  py-4 px-10 dark:bg-dark-800 sm:px-8 md:py-4 ">
           <header className="relative my-4 flex w-full items-center justify-center md:justify-start">

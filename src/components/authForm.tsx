@@ -66,7 +66,7 @@ export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className="flex w-full flex-col items-center space-y-2 pb-5 sm:w-4/6  md:w-4/5 md:gap-y-4 lg:w-4/5 xl:w-2/4"
+      className="flex w-full flex-col items-center space-y-4 pb-5 sm:w-4/6  md:w-4/5 md:gap-y-4 lg:w-4/5 xl:w-2/4"
     >
       <Input
         name="username"
@@ -75,7 +75,7 @@ export const AuthForm: React.FC<authFormProps> = ({ handleAuth, type }) => {
         errorMsg={formik.errors.username}
         onBlur={formik.handleBlur}
         touched={formik.touched.username}
-        type="username"
+        type="email"
         placeholder="Enter Email"
       />
       <Input

@@ -27,13 +27,13 @@ export const Input: React.FC<inputProps> = ({
     <div className="w-full">
       <label
         htmlFor="email"
-        className={`${errorMsg ? "border border-red-500" : ""
-          } flex w-full items-center space-x-3 rounded-full bg-gray-200 px-4 py-3 text-sm md:text-base lg:text-xl xl:text-2xl`}
+        className={`${touched && errorMsg ? "border border-red-500" : ""
+          } flex w-full items-center space-x-3 rounded-full bg-gray-200 dark:bg-dark-300 px-4 py-3 text-sm md:text-base lg:text-xl xl:text-2xl`}
       >
         {type === "email" && <MdEmail size="1.4em" color="#7F7F7F" />}
         {type === "password" && <MdPassword size="1.4em" color="#7F7F7F" />}
         <input
-          className="w-full bg-gray-200 outline-none"
+          className="w-full bg-transparent outline-none dark:text-white"
           type={type ?? "text"}
           name={name}
           placeholder={placeholder}
@@ -43,8 +43,8 @@ export const Input: React.FC<inputProps> = ({
         />
       </label>
       <p
-        className={`${touched && errorMsg ? "inline" : "hidden"
-          } font-nunito mt-1 ml-5 text-xs tracking-wider text-red-500 lg:text-base xl:text-lg`}
+        className={`${touched && errorMsg ? "block" : "hidden"
+          } font-nunito mt-1 text-xs text-center tracking-wider text-red-500 lg:text-base xl:text-lg`}
       >
         {errorMsg || 'empty'}
       </p>
