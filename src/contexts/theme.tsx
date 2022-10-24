@@ -1,6 +1,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
@@ -13,7 +14,7 @@ type ThemeProviderProps = {
   children: React.ReactNode;
 };
 
-type ThemeState = 'light' | 'dark';
+type ThemeState = 'light' | 'dark' | null;
 
 
 const ThemeContext = createContext<ThemeContextInterface | undefined>(
@@ -22,15 +23,16 @@ const ThemeContext = createContext<ThemeContextInterface | undefined>(
 
 
 const loadTheme = () => {
-  if (typeof window !== 'undefined') {
-    const theme = localStorage.getItem('theme')
-    return theme as ThemeState
-  }
-  return 'light' as ThemeState
+  const theme = localStorage.getItem('theme')
+  return theme as ThemeState
 }
 
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeState>(loadTheme());
+  const [theme, setTheme] = useState<ThemeState>('light');
+
+  useEffect(() => {
+    setTheme(loadTheme())
+  }, [])
 
   const toggleTheme = () => {
     if (theme === 'light') {
@@ -38,8 +40,8 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       localStorage.setItem('theme', 'dark')
       return
     }
-    setTheme('light')
     localStorage.setItem('theme', 'light')
+    setTheme('light')
   }
 
   const value: ThemeContextInterface = { theme, toggleTheme };
