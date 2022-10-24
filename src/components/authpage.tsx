@@ -60,7 +60,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`flex h-screen w-screen ${theme === 'dark' && "dark"} `}>
+      <main className={`flex h-screen w-screen max-w-screen max-h-screen overflow-hidden ${theme === 'dark' && "dark"}`}>
         <AuthAside
           title={pageType === "Sign In" ? "Hello Friend!" : "Welcome Back!"}
           body={authAsideBodies[pageType]}
