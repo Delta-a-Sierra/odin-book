@@ -2,32 +2,20 @@ import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { trpc } from "../utils/trpc";
 import { AuthAside } from "./authaside";
 import { Logo, FloatLink, SocialIcon } from "./";
 import { ThemeIcon } from "./themeIcon";
 import { useColor } from "../hooks/useColor";
 import { useTheme } from "../contexts/theme";
 import { AuthForm } from "./authForm";
-import { useEffect, useState } from "react";
 
 type AuthPageProps = {
   pageType: "Sign Up" | "Sign In";
 };
 
-interface credentials {
-  username: string;
-  password: string;
-}
-
 const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const signUp = trpc.auth.signUp.useMutation();
-  const [credentials, setCredentials] = useState<credentials>({
-    username: "",
-    password: "",
-  });
   const colors = useColor(); // tailwind colors
 
   const { theme } = useTheme();
@@ -48,30 +36,6 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   if (session) {
     router.push("/");
   }
-
-
-
-  // Automatically Signs in after SignUp
-  useEffect(() => {
-    if (signUp.data?.ok) {
-      handleSignin(credentials);
-    }
-  }, [signUp, credentials]);
-
-  const handleSignin = async (form: credentials) => {
-    const { username, password } = form;
-    await signIn("credentials", {
-      username,
-      password,
-      redirect: false,
-    });
-  };
-
-  const handleSignUp = (form: credentials) => {
-    const { username, password } = form;
-    setCredentials({ username, password });
-    signUp.mutate({ username, password });
-  };
 
   const handleOauth = async (provider: "facebook" | "discord" | "google") => {
     await signIn(provider);
@@ -138,7 +102,6 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
             </div>
             <AuthForm
               type={pageType}
-              handleAuth={pageType === "Sign In" ? handleSignin : handleSignUp}
             />
             <div className="mt-6 md:hidden">
               <FloatLink href={pageType === 'Sign In' ? "/auth/signup" : "/auth/signin"} text={linkText[pageType]} size="sm" center />
