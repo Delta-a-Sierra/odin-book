@@ -28,7 +28,7 @@ const loadTheme = () => {
 }
 
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeState>('light');
+  const [theme, setTheme] = useState<ThemeState>(null);
 
   useEffect(() => {
     setTheme(loadTheme())
