@@ -9,13 +9,10 @@ import { useColor } from "../hooks/useColor";
 export const ThemeIcon: React.FC<themeIconProps> = ({ color, size }) => {
   const colors = useColor();
 
-  const {
-    state: { dark },
-    dispatch,
-  } = useTheme();
-  if (dark) {
+  const { theme, toggleTheme } = useTheme();
+  if (theme === 'dark') {
     return (
-      <div onClick={() => dispatch({ type: "toggle" })}>
+      <div onClick={toggleTheme}>
         <FaSun
           size={size ? size : "2em"}
           color={color ? color : colors.primary}
@@ -24,7 +21,7 @@ export const ThemeIcon: React.FC<themeIconProps> = ({ color, size }) => {
     );
   }
   return (
-    <div onClick={() => dispatch({ type: "toggle" })}>
+    <div onClick={toggleTheme}>
       <FaMoon
         size={size ? size : "2em"}
         color={color ? color : colors.accent}

@@ -30,9 +30,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   });
   const colors = useColor(); // tailwind colors
 
-  const {
-    state: { dark },
-  } = useTheme();
+  const { theme } = useTheme();
 
   const authAsideBodies = {
     "Sign In":
@@ -50,6 +48,8 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
   if (session) {
     router.push("/");
   }
+
+
 
   // Automatically Signs in after SignUp
   useEffect(() => {
@@ -85,6 +85,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
     router.push("/auth/signin");
   };
 
+
   return (
     <>
       <Head>
@@ -95,7 +96,7 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={`flex h-screen w-screen ${dark && "dark"} `}>
+      <main className={`flex h-screen w-screen ${theme === 'dark' && "dark"} `}>
         <AuthAside
           title={pageType === "Sign In" ? "Hello Friend!" : "Welcome Back!"}
           body={authAsideBodies[pageType]}
