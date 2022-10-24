@@ -1,43 +1,55 @@
-import { createContext, Dispatch, useContext, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface ThemeContextInterface {
-  state: ThemeState;
-  dispatch: Dispatch<ThemeAction>;
+  theme: ThemeState;
+  toggleTheme: () => void
 }
 
 type ThemeProviderProps = {
-  children: string
-}
+  children: React.ReactNode;
+};
 
-type ThemeState = {
-  dark: boolean
-}
+type ThemeState = 'light' | 'dark' | null;
 
-type ThemeAction = {
-  type: string
-}
 
-const ThemeContext = createContext<ThemeContextInterface | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextInterface | undefined>(
+  undefined
+);
 
-function ThemeReducer(state: ThemeState, action: ThemeAction) {
-  switch (action.type) {
-    case "toggle": {
-      return { dark: !state.dark };
-    }
-    default: {
-      return state
-    }
-  }
+
+const loadTheme = () => {
+  const theme = localStorage.getItem('theme')
+  return theme as ThemeState
 }
 
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [state, dispatch] = useReducer(ThemeReducer, { dark: false });
+  const [theme, setTheme] = useState<ThemeState>(null);
 
-  const value = { state, dispatch };
+  useEffect(() => {
+    setTheme(loadTheme())
+  }, [])
+
+  const toggleTheme = () => {
+    if (theme === 'light') {
+      setTheme('dark')
+      localStorage.setItem('theme', 'dark')
+      return
+    }
+    localStorage.setItem('theme', 'light')
+    setTheme('light')
+  }
+
+  const value: ThemeContextInterface = { theme, toggleTheme };
+
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
-}
+};
 
 function useTheme() {
   const context = useContext(ThemeContext);

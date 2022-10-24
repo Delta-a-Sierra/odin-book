@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!session) {
-      router.push("/signin");
+      router.push("/auth/signin");
     }
   }, []);
 

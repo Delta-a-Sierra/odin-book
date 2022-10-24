@@ -8,7 +8,6 @@ import * as argon2 from 'argon2'
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../server/db/client";
 import { env } from "../../../env/server.mjs";
-import { boolean } from "zod";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
@@ -35,7 +34,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/signin",
+    signIn: "/auth/signin",
   },
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),

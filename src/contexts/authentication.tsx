@@ -1,13 +1,9 @@
 import { getSession } from "next-auth/react";
 import {
-  FC,
   useContext,
-  React,
   useEffect,
   useState,
   createContext,
-  FunctionComponent,
-  ReactChildren,
 } from "react";
 
 interface AuthContextInterface {
