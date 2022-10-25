@@ -7,7 +7,7 @@ type inputProps = {
   value: string | undefined;
   onChange: ChangeEventHandler<HTMLInputElement>;
   errorMsg?: string;
-  onBlur: FocusEventHandler<HTMLInputElement>;
+  onBlur?: FocusEventHandler<HTMLInputElement>;
   touched: boolean | undefined;
   type?: string;
   placeholder: string;

@@ -13,32 +13,34 @@ const Home: NextPage = () => {
       router.push("/auth/signin");
     }
   }, []);
-
-  return (
-    <>
-      <Head>
-        <title>Odin Book - Home</title>
-        <meta
-          name="description"
-          content="Odin Book - Twitter/Facebook clone by Dwayne Sutherland"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <h1>home</h1>
-        {session && (
-          <button
-            className="rounded-md bg-primary p-4 text-white"
-            onClick={() => {
-              signOut();
-            }}
-          >
-            Sign Out
-          </button>
-        )}
-      </main>
-    </>
-  );
-};
+  if (session) {
+    return (
+      <>
+        <Head>
+          <title>Odin Book - Home</title>
+          <meta
+            name="description"
+            content="Odin Book - Twitter/Facebook clone by Dwayne Sutherland"
+          />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <main>
+          <h1>home</h1>
+          {session && (
+            <button
+              className="rounded-md bg-primary p-4 text-white"
+              onClick={() => {
+                signOut();
+              }}
+            >
+              Sign Out
+            </button>
+          )}
+        </main>
+      </>
+    );
+  };
+  return null
+}
 
 export default Home;
