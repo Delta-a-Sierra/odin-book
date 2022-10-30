@@ -9,13 +9,20 @@ export const authRouter = router({
   getSecretMessage: protectedProcedure.query(() => {
     return "You are logged in and can see this secret message!";
   }),
-  test: publicProcedure
-    .input(z.object({
-      username: z.string(),
-      password: z.string()
-    }))
-    .query(() => {
-      return 'anything'
+  getIsNewUser: publicProcedure
+    .query(async ({ ctx }) => {
+      try {
+        if (!ctx.session || !ctx.session.user) {
+          throw new Error('no active session')
+        }
+        const user = await ctx.prisma.user.findFirst({ where: { id: ctx.session.user.id }, select: { isNewUser: true } })
+        if (!user) {
+          throw new Error('no user matches session')
+        }
+        return user.isNewUser
+      } catch {
+        throw new Error('Unable to connect to database')
+      }
     }),
   signUp: publicProcedure
     .input(z.object({

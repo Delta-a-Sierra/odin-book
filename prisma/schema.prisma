@@ -56,6 +56,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  isNewUser     Boolean   @default(true)
 }
 
 model VerificationToken {

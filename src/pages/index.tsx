@@ -1,18 +1,33 @@
 import type { NextPage } from "next";
-import { getSession, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const isNewUser = trpc.auth.getIsNewUser.useQuery()
 
   useEffect(() => {
+    if (status === 'loading') {
+      return
+    }
     if (!session) {
       router.push("/auth/signin");
     }
-  }, []);
+  }, [session, status]);
+
+
+
+  if (isNewUser.data === true) {
+    router.push('/getstarted')
+  }
+
+  if (isNewUser.isLoading || !isNewUser.isLoading && isNewUser.data) {
+    return null
+  }
   if (session) {
     return (
       <>

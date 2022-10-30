@@ -4,7 +4,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { AuthAside } from "./authaside";
 import { FloatLink, SocialIcon, LogoAndThemeHeader } from "./";
-import { useColor } from "../hooks/useColor";
 import { useTheme } from "../contexts/theme";
 import { AuthForm } from "./authForm";
 
@@ -13,11 +12,14 @@ type AuthPageProps = {
 };
 
 const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
-  const { data: session } = useSession();
   const router = useRouter();
-  const colors = useColor(); // tailwind colors
-
+  const { data: session } = useSession()
   const { theme } = useTheme();
+  // Redirects if authenticated
+
+  if (session) {
+    router.push("/")
+  }
 
   const authAsideBodies = {
     "Sign In":
@@ -31,14 +33,6 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
     "Sign Up": "Already have an account?",
   };
 
-  if (!theme) {
-    return null;
-  }
-
-  // Redirects if authenticated
-  if (session) {
-    router.push("/");
-  }
 
   const handleOauth = async (provider: "facebook" | "discord" | "google") => {
     await signIn(provider);
@@ -63,9 +57,8 @@ const AuthPage: NextPage<AuthPageProps> = ({ pageType }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
-        className={`max-w-screen flex h-screen max-h-screen w-screen overflow-hidden ${
-          theme === "dark" && "dark"
-        }`}
+        className={`max-w-screen flex h-screen max-h-screen w-screen overflow-hidden ${theme === "dark" && "dark"
+          }`}
       >
         <AuthAside
           title={pageType === "Sign In" ? "Hello Friend!" : "Welcome Back!"}

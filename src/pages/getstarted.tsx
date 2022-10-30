@@ -8,6 +8,7 @@ import { useTheme } from "../contexts/theme";
 import * as Yup from "yup";
 import { Button } from "../components/button";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 type intialsType = {
   firstName: string,
@@ -37,7 +38,7 @@ const GetStatedPage: NextPage = () => {
   const { theme } = useTheme();
   const [slideNumber, setSlideNumber] = useState<number>(2)
   const router = useRouter()
-
+  const { data: session, status } = useSession()
   const formik = useFormik({
     initialValues: intial,
     validationSchema: validation,
@@ -46,6 +47,16 @@ const GetStatedPage: NextPage = () => {
       // router.push('/')
     }
   })
+
+  useEffect(() => {
+    if (status === 'loading') {
+      return
+    }
+    if (!session) {
+      router.push("/auth/signin");
+    }
+  }, [session, status]);
+
 
 
   const NameForm = (
