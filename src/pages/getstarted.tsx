@@ -9,6 +9,8 @@ import * as Yup from "yup";
 import { Button } from "../components/button";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import { DateTime } from "luxon";
+import { type } from "os";
 
 type intialsType = {
   firstName: string,
@@ -20,31 +22,65 @@ type intialsType = {
   city: string
 }
 
+type dateType = {
+  day: string | number
+  month: string
+  year: string | number
+}
+
 const intial: intialsType = { firstName: '', lastName: '', day: '', month: '', year: '', country: '', city: '' }
 
 const validation = Yup.object({
   firstName: Yup.string().required(),
   lastName: Yup.string().required(),
-  day: Yup.string().required(),
+  day: Yup.number().typeError('must specify number').required(),
   month: Yup.string().required(),
-  year: Yup.string().required(),
+  year: Yup.number().typeError('must specify number').required().min(new Date().getFullYear() - 150).max(new Date().getFullYear() - 16),
   city: Yup.string().required(),
   country: Yup.string().required(),
 })
 
+const CheckDateString = ({ day, month, year }: dateType) => {
+  const dateString = `${month} ${day} ${year}`;
+  const invalid = DateTime.fromFormat(dateString, "LLLL dd yyyy").invalid;
+  if (!invalid) {
+    return true;
+  }
+  return false;
+};
+
+const CheckIfEighteen = ({ day, month, year }: dateType) => {
+  const dateString = `${month} ${day} ${year}`;
+  const dob = DateTime.fromFormat(dateString, "LLLL dd yyyy");
+  const today = DateTime.now();
+  if (today.minus({ years: 18 }).ts >= dob.ts) {
+    return true
+  }
+  return false
+};
 
 // -------------- Component ---------------------------------
 const GetStatedPage: NextPage = () => {
   const { theme } = useTheme();
-  const [slideNumber, setSlideNumber] = useState<number>(2)
+  const [slideNumber, setSlideNumber] = useState<number>(0)
   const router = useRouter()
   const { data: session, status } = useSession()
+  const [formErrors, setFormErrors] = useState({ name: '', dob: '', location: '' })
   const formik = useFormik({
     initialValues: intial,
     validationSchema: validation,
-    onSubmit: () => {
-      console.log('submit')
-      // router.push('/')
+    onSubmit: (e) => {
+      if (CheckDateString(e)) {
+        if (CheckIfEighteen(e)) {
+          router.push('/')
+        } else {
+          setFormErrors(prev => ({ ...prev, dob: 'not over 18' }))
+          setSlideNumber(1)
+        }
+      } else {
+        setFormErrors(prev => ({ ...prev, dob: 'not a valid date' }))
+        setSlideNumber(1)
+      }
     }
   })
 
@@ -82,6 +118,7 @@ const GetStatedPage: NextPage = () => {
         touched={formik.touched.lastName}
         type="text"
       />
+      <p className={`${formErrors.name} ? 'visible' : 'hidden'} text-center text-red-500 text-sm`}>{formErrors.location}</p>
     </>
   )
 
@@ -120,6 +157,7 @@ const GetStatedPage: NextPage = () => {
         touched={formik.touched.year}
         type="text"
       />
+      <p className={`${formErrors.dob} ? 'visible' : 'hidden'} text-center text-red-500 text-sm`}>{formErrors.dob}</p>
     </>
   )
   const LocationForm = (
@@ -145,6 +183,7 @@ const GetStatedPage: NextPage = () => {
         touched={formik.touched.country}
         type="text"
       />
+      <p className={`${formErrors.location} ? 'visible' : 'hidden'} text-center text-red-500 text-sm`}>{formErrors.location}</p>
     </>
   )
 
@@ -187,7 +226,7 @@ const GetStatedPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${theme} w-screen h-screen overflow-hidden`}>
-        <div className={` pb-18 h-screen w-full h-full flex flex-col gap-y-8 bg-primary p-4 dark:bg-dark-800`}>
+        <div className={` pb-18 w-full h-full flex flex-col gap-y-8 bg-primary p-4 dark:bg-dark-800`}>
           <LogoAndThemeHeader />
           <h1 className="text-white text-center text-3xl font-open font-extrabold">Get Started</h1>
           <div className="flex-1 flex-col flex gap-y-4 items-center">
