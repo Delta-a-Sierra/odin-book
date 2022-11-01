@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 import * as argon2 from "argon2";
+import { TRPCError } from "@trpc/server";
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
@@ -9,7 +10,7 @@ export const authRouter = router({
   getSecretMessage: protectedProcedure.query(() => {
     return "You are logged in and can see this secret message!";
   }),
-  getIsNewUser: publicProcedure
+  getIsNewUser: protectedProcedure
     .query(async ({ ctx }) => {
       try {
         if (!ctx.session || !ctx.session.user) {
@@ -22,6 +23,27 @@ export const authRouter = router({
         return user.isNewUser
       } catch {
         throw new Error('Unable to connect to database')
+      }
+    }),
+  setIsNewUser: protectedProcedure
+    .input(z.object({
+      isNewUser: z.boolean()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        if (!ctx.session || !ctx.session.user) {
+          throw new TRPCError({ code: 'UNAUTHORIZED', message: 'no active user session' })
+        }
+        await ctx.prisma.user.update({
+          where: {
+            id: ctx.session.user.id
+          },
+          data: {
+            isNewUser: input.isNewUser
+          }
+        })
+      } catch (e) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'unable to connect to database', cause: e })
       }
     }),
   signUp: publicProcedure

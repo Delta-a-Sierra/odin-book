@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { Input, LogoAndThemeHeader } from "../components";
+import { DropDown, Input, LogoAndThemeHeader } from "../components";
 import { GetStartedContainer } from "../contexts/GetStartedContainer";
 import { useTheme } from "../contexts/theme";
 import * as Yup from "yup";
@@ -10,7 +10,56 @@ import { Button } from "../components/button";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { DateTime } from "luxon";
-import { type } from "os";
+import { trpc } from "../utils/trpc";
+
+const days = [
+  "01",
+  "02",
+  "03",
+  "04",
+  "05",
+  "06",
+  "07",
+  "08",
+  "09",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "15",
+  "16",
+  "17",
+  "18",
+  "19",
+  "20",
+  "21",
+  "22",
+  "23",
+  "24",
+  "25",
+  "26",
+  "27",
+  "28",
+  "29",
+  "30",
+  "31",
+];
+
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 type intialsType = {
   firstName: string,
@@ -66,12 +115,14 @@ const GetStatedPage: NextPage = () => {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [formErrors, setFormErrors] = useState({ name: '', dob: '', location: '' })
+  const setIsNewUser = trpc.auth.setIsNewUser.useMutation()
   const formik = useFormik({
     initialValues: intial,
     validationSchema: validation,
     onSubmit: (e) => {
       if (CheckDateString(e)) {
         if (CheckIfEighteen(e)) {
+          setIsNewUser.mutate({ isNewUser: false })
           router.push('/')
         } else {
           setFormErrors(prev => ({ ...prev, dob: 'not over 18' }))
@@ -93,7 +144,7 @@ const GetStatedPage: NextPage = () => {
     }
   }, [session, status]);
 
-
+  const testContent = ['01', '02', '03', '04', '01', '02', '03', '04']
 
   const NameForm = (
     <>
@@ -125,7 +176,7 @@ const GetStatedPage: NextPage = () => {
   const AgeForm = (
     <>
       <div className='flex gap-x-4'>
-        <Input
+        <DropDown
           name="day"
           onChange={formik.handleChange}
           value={formik.values.day}
@@ -133,10 +184,11 @@ const GetStatedPage: NextPage = () => {
           placeholder="Day"
           onBlur={formik.handleBlur}
           touched={formik.touched.day}
-          type="text"
+          content={days}
+          formik={formik}
         />
 
-        <Input
+        <DropDown
           name="month"
           onChange={formik.handleChange}
           value={formik.values.month}
@@ -144,7 +196,8 @@ const GetStatedPage: NextPage = () => {
           placeholder="Month"
           onBlur={formik.handleBlur}
           touched={formik.touched.month}
-          type="text"
+          content={months}
+          formik={formik}
         />
       </div>
       <Input
@@ -155,7 +208,6 @@ const GetStatedPage: NextPage = () => {
         placeholder="Year"
         onBlur={formik.handleBlur}
         touched={formik.touched.year}
-        type="text"
       />
       <p className={`${formErrors.dob} ? 'visible' : 'hidden'} text-center text-red-500 text-sm`}>{formErrors.dob}</p>
     </>
