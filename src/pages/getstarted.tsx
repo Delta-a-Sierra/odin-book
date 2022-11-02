@@ -287,7 +287,7 @@ const GetStatedPage: NextPage = () => {
           <LogoAndThemeHeader />
           <h1 className="text-white text-center text-3xl font-open font-extrabold">Get Started</h1>
           <div className="flex-1 flex-col flex gap-y-4 items-center">
-            <div className="w-3/4 md:w-2/4 xl:w-2/5">
+            <div className="w-full md:w-2/4 xl:w-2/5">
               <GetStartedContainer title={forms[slideNumber]?.title}>
                 <form className="flex flex-col gap-4 px-4 md:px-8 pt-4 pb-8">
                   {forms[slideNumber]?.content}

@@ -1,4 +1,5 @@
 import { ChangeEventHandler, FocusEventHandler, MouseEventHandler, useEffect, useRef, useState } from "react";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 type dropdownProps = {
   name: string;
@@ -79,6 +80,11 @@ export const DropDown: React.FC<dropdownProps> = ({
           onChange={onChange}
           onBlur={onBlur}
         />
+        {dropDownVisible ? (
+          <MdKeyboardArrowUp color="gray" size="1.5em" />
+        ) : (
+          <MdKeyboardArrowDown color="gray" size="1.5em" />
+        )}
       </label>
       {dropDownVisible ? (
         <ul className={` absolute z-10 top-full flex flex-col gap-y-1 left-0 w-full max-h-28 gray-200 dark:bg-dark-300 text-center dark:text-gray-400 overflow-y-scroll py-2 shadow-md`}>
