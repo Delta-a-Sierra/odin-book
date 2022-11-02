@@ -115,15 +115,17 @@ const GetStatedPage: NextPage = () => {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [formErrors, setFormErrors] = useState({ name: '', dob: '', location: '' })
-  const setIsNewUser = trpc.auth.setIsNewUser.useMutation()
+  const updateGetstarted = trpc.user.updateGetStarted.useMutation()
+  const isNewUser = trpc.auth.getIsNewUser.useQuery()
   const formik = useFormik({
     initialValues: intial,
     validationSchema: validation,
     onSubmit: (e) => {
       if (CheckDateString(e)) {
         if (CheckIfEighteen(e)) {
-          setIsNewUser.mutate({ isNewUser: false })
-          router.push('/')
+          const dateString = `${e.month} ${e.day} ${e.year}`;
+          let dob = DateTime.fromFormat(dateString, "LLLL dd yyyy");
+          updateGetstarted.mutate({ dob: dob.toISO(), name: `${e.firstName} ${e.lastName}`, city: e.city, country: e.country })
         } else {
           setFormErrors(prev => ({ ...prev, dob: 'not over 18' }))
           setSlideNumber(1)
@@ -144,7 +146,10 @@ const GetStatedPage: NextPage = () => {
     }
   }, [session, status]);
 
-  const testContent = ['01', '02', '03', '04', '01', '02', '03', '04']
+
+  if (isNewUser.data === false) {
+    router.push('/')
+  }
 
   const NameForm = (
     <>

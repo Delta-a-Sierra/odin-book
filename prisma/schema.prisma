@@ -57,6 +57,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
   isNewUser     Boolean   @default(true)
+  city          String? 
+  country       String?
+  dob           String?  
 }
 
 model VerificationToken {
